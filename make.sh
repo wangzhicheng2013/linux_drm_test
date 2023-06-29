@@ -1,0 +1,1 @@
+g++ -g -o drmTest test.cpp -I /usr/include/drm  -ldrm
