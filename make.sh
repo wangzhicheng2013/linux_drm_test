@@ -1,1 +1,1 @@
-g++ -g -o drmTest test.cpp -I /usr/include/drm  -ldrm
+g++ -g -o drmTest main.cpp -I /usr/include/drm  -ldrm

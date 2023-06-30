@@ -264,6 +264,7 @@ int init() {
 
 bool draw_image(const char* file_path) {
     FILE *fp = fopen(file_path, "rb");
+    static int i = 0;
     if (nullptr == fp) {
         printf("open file:%s failed!\n", file_path);
         return false;
@@ -278,7 +279,22 @@ bool draw_image(const char* file_path) {
         fread(drm_fb.vaddr, file_size, 1, fp);
     }
     fclose(fp);
+    drm_fb.vaddr[i] = i % 256;
+    i = (i + 1) % drm_fb.size;
     return 0 == drmModeSetCrtc(drm_fd, drm_crtc_id, drm_fb.fb_id, 0, 0, &drm_mode_conn_id, 1, &drm_mode_conn->modes[0]);
+}
+
+void test_drm() {
+    for (int i = 0;i < 5;i++) {
+        if (i % 2)  {
+            memset(drm_fb.vaddr, 0x00, drm_fb.size);
+        }
+        else {
+            memset(drm_fb.vaddr, 0xFF, drm_fb.size);
+        }
+        drmModeSetCrtc(drm_fd, drm_crtc_id, drm_fb.fb_id, 0, 0, &drm_mode_conn_id, 1, &drm_mode_conn->modes[0]);
+        sleep(1);
+    }
 }
 int main(int argc, char **argv)
 {
@@ -316,6 +332,7 @@ int main(int argc, char **argv)
 */
     draw_image("123.rgb");
     getchar();
+    test_drm();
 	close_drm_device();
 
 	return 0;
